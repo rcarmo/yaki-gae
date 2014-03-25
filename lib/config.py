@@ -16,8 +16,8 @@ settings = Struct({
     "cache": {
         "#": "In-worker memory cache",
         "worker_timeout": 60,
-        "#": "Redis cache timeout",
-        "redis_timeout": 300,
+        "#": "memcache timeout",
+        "cache_timeout": 300,
         "#":"HTTP Cache control",
         "cache_control": 3600
     },

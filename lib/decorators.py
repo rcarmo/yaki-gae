@@ -18,7 +18,7 @@ log = logging.getLogger()
 gmt_format_string = "%a, %d %b %Y %H:%M:%S GMT"
 
 
-def redis_cache(r, prefix='url', ttl=3600):
+def cache_memory(prefix='url', ttl=3600):
     """Cache route results in Memcache"""
 
     def decorator(callback):
