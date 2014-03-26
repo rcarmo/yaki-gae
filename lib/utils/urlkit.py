@@ -153,16 +153,17 @@ class DefaultErrorHandler(HTTPDefaultErrorHandler):
         return result
 
 
-def _open_source(source, head, etag = None, last_modified = None, timeout = None, user_agent = "Mozilla/5.0"):
+def _open_source(source, head, data = None, etag = None, last_modified = None, timeout = None, user_agent = "Mozilla/5.0"):
     """Open anything"""
+
     if hasattr(source, 'read'):
         return source
     if source == '-':
         return sys.stdin
 
     if urlparse.urlparse(source)[0][:4] == 'http':
-        request = urllib2.Request(source)
-        if head:
+        request = urllib2.Request(source, data)
+        if head and not data:
             request.get_method = lambda: 'HEAD'
         request.add_header('User-Agent', user_agent)
         if etag:
@@ -181,11 +182,11 @@ def _open_source(source, head, etag = None, last_modified = None, timeout = None
     return StringIO(str(source))
 
 
-def fetch(url, etag = None, last_modified = None, head = False, timeout = None, user_agent = "Mozilla/5.0"):
+def fetch(url, data = None, etag = None, last_modified = None, head = False, timeout = None, user_agent = "Mozilla/5.0"):
     """Fetch a URL and return the contents"""
 
     result = {}
-    f = _open_source(url, head, etag, last_modified, timeout, user_agent)
+    f = _open_source(url, head, data, etag, last_modified, timeout, user_agent)
     if not head:
         result['data'] = f.read()
     if hasattr(f, 'headers'):

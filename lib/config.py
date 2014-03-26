@@ -6,10 +6,11 @@ Description: Shared configuration data
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, platform, logging.config
+import os, sys, platform, logging
 from utils import Struct, get_config, path_for, tb
 
 settings = Struct({
+    "loglevel": logging.DEBUG,
     "content": {
         "path": "data/main"
     },
@@ -30,5 +31,16 @@ settings = Struct({
         "plugins": {
         },
         "markup_overrides": { "text/plain": "text/x-textile" }
+    },
+    "dropbox": {
+        "app_key": "********",
+        "app_secret": "********"
     }
 })
+
+try:
+    from _config import overrides
+    settings.update(overrides)
+    settings = Struct(settings)
+except:
+    pass

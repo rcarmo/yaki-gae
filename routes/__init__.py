@@ -6,4 +6,4 @@ import os, sys, logging
 sys.path.append('../lib')
 log = logging.getLogger()
 
-import wiki, static
+import wiki, static, oauth

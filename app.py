@@ -9,15 +9,13 @@ License: MIT (see LICENSE.md for details)
 """
 
 import os, sys, json, logging
+logging.getLogger().setLevel(logging.DEBUG)
 
 # Make sure our bundled libraries take precedence
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'lib'))
-print sys.path
 
 import utils, bottle
 from config import settings
-
-log = logging.getLogger()
 
 bottle.TEMPLATE_PATH = [os.path.join("themes", settings.theme, "views")]
 
