@@ -4,11 +4,13 @@ import os, sys, logging
 
 log = logging.getLogger()
 
-import time, hashlib, hmac, urllib
+import time, hashlib, hmac, json, urllib, traceback
 from bottle import post, get, abort, request, response, redirect
 from config import settings
 from google.appengine.api import memcache
+from utils import Struct
 from utils.urlkit import fetch
+from models import DropboxToken
 
 # TODO: proper auth, stronger key, etc.
 @get('/authorize')
@@ -46,5 +48,14 @@ def get_token():
         "redirect_uri" : "http://localhost:8080/authorize/confirmation"
     }))
     if result['status'] == 200:
-        log.info(result['data'])
+        try:
+            r = Struct(json.loads(result['data']))
+            r.key = "default"
+            log.info(r)
+            t = DropboxToken(**r)
+            t.put()
+        except:
+            log.error("%s", traceback.format_exc())
+
+
     return result
