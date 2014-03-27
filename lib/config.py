@@ -35,7 +35,7 @@ settings = Struct({
     "dropbox": {
         "app_key": "********",
         "app_secret": "********",
-        "file_root": ""
+        "root_path": ""
     }
 })
 
