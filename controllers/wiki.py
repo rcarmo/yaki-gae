@@ -13,16 +13,36 @@ log = logging.getLogger()
 
 from yaki import Store
 from yaki.constants import *
-from redis import StrictRedis as Redis
+from google.appengine.api import memcache
 from difflib import get_close_matches
+from models import Page
+
+@memoize
+def get_recent_changes(limit):
+    result = memcache.get("meta:recent_changes")
+    if not result:
+        result = []
+        for k, m in ndb.gql("SELECT __key__, mtime FROM Page ORDER BY mtime DESC LIMIT %d" % limit):
+            result.append(k)
+        memcache.set("meta:recent_changes", result)
+    return result
+
+
+@memoize
+def get_page_headers():
+    result = memcache.get("meta:page_headers")
+    if not result:
+        result = {}
+        for k, h in ndb.gql("SELECT __key__, headers FROM Page"):
+            result[k] = h
+        memcache.set("meta:page_headers", result)
+    return result
 
 class WikiController(object):
 
     def __init__(self, settings):
         """Initialize the controler and preload basic metadata"""
 
-    	self.redis = Redis(host=settings.redis.bind_address, port=settings.redis.port)
-    	self.store = Store(settings.content.path)
         self.get_all_pages()   # page modification times
         self.get_all_aliases() # page aliases
 
@@ -30,9 +50,7 @@ class WikiController(object):
     def get_page(self, path):
         """Returns a single page"""
 
-        if path in self.store.pages:
-            return self.store.get_page(path)
-        raise KeyError
+        return Page.get_by_id(path)
 
 
     def resolve_alias(self, path):

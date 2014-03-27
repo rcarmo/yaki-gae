@@ -9,14 +9,18 @@ import os, sys, logging
 
 log = logging.getLogger()
 
-from bottle import route, redirect, view, static_file
+from bottle import route, redirect, view, static_file, abort
 from config import settings
 
 from utils import path_for
 from yaki import Store
 from yaki.decorators import render
 
-from decorators import timed, cache_memory, cache_control, cache_results
+from decorators import timed, redis_cache, cache_control, cache_results, memoize
+
+from controllers.wiki import WikiController
+
+c = WikiController(settings)
 
 @route('/')
 @route(settings.wiki.base)
@@ -28,19 +32,25 @@ def root():
 @route(settings.wiki.base + '/<page:path>')
 @timed
 @cache_results(settings.cache.worker_timeout)
-@cache_memory('html', settings.cache.cache_timeout)
+@redis_cache(c.redis, 'html', settings.cache.redis_timeout)
 @cache_control(settings.cache.cache_control)
 @view('wiki')
-@render()
+@render(settings.wiki.markup_overrides)
 def wiki(page):
     """Render a wiki page"""
 
-    s = Store(path_for(settings.content.path))
+    # should fallback to index/aliases/levensheim
     try:
-        result = s.get_page(page.lower())
+        result = c.get_page(page)
     except Exception, e:
-        log.warn("%s rendering page %s" % (e, page))
-        result = s.get_page('meta/EmptyPage')
+        original = c.resolve_alias(page)
+        if original:
+            redirect("%s/%s" % (settings.wiki.base, original))
+        close = c.get_close_matches_for_page(page)
+        if len(close):
+            redirect("%s/%s" % (settings.wiki.base, close[0]))
+            return
+        abort(404, "Page not found")
     return result
     
 
