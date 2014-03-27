@@ -7,9 +7,10 @@ class DropboxToken(ndb.Model):
 
 
 class Page(ndb.Model):
-    mtime   = ndb.DateTimeProperty()
-    ctime   = ndb.DateTimeProperty()
-    title   = ndb.StringProperty()   # for indexing
-    tags    = ndb.StringProperty()   # tags, for indexing
-    headers = ndb.JsonProperty()     # all other headers, preserved for posterity
-    body    = ndb.TextProperty()     # raw markup
+    mtime     = ndb.DateTimeProperty()
+    ctime     = ndb.DateTimeProperty()
+    title     = ndb.StringProperty()   # for indexing
+    tags      = ndb.StringProperty()   # tags, for indexing
+    headers   = ndb.JsonProperty()     # all other headers, preserved for posterity
+    body      = ndb.TextProperty()     # raw markup
+    mime_type = ndb.TextProperty()

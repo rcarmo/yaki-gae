@@ -13,6 +13,13 @@ from utils.urlkit import fetch
 from models import DropboxToken
 
 # TODO: proper auth, stronger key, etc.
+
+
+@get('/dump')
+def dump_key():
+    return str(DropboxToken.get_by_id('default'))
+
+
 @get('/authorize')
 def begin_auth():
     h = hmac.new(settings.dropbox.app_secret)
@@ -40,22 +47,21 @@ def get_token():
     token_url = "https://api.dropbox.com/1/oauth2/token"
 
     log.info(request.url)
-    result = fetch(token_url, urllib.urlencode({
+    result = Struct(fetch(token_url, urllib.urlencode({
         "code"         : code,
         "grant_type"   : "authorization_code",
         "client_id"    : settings.dropbox.app_key,
         "client_secret": settings.dropbox.app_secret,
         "redirect_uri" : "http://localhost:8080/authorize/confirmation"
-    }))
-    if result['status'] == 200:
+    })))
+    if result.status == 200:
         try:
-            r = Struct(json.loads(result['data']))
-            r.key = "default"
+            r = Struct(json.loads(result.data))
+            r.id = "default"
             log.info(r)
             t = DropboxToken(**r)
             t.put()
         except:
             log.error("%s", traceback.format_exc())
-
 
     return result

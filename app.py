@@ -19,7 +19,7 @@ from config import settings
 
 bottle.TEMPLATE_PATH = [os.path.join("themes", settings.theme, "views")]
 
-import api, routes, controllers
+import api, routes, controllers, tasks
 
 app = bottle.default_app()
 bottle.run(app=app, server='gae')
