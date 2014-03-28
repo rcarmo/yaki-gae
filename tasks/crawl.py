@@ -10,6 +10,7 @@ from decorators import memoize
 from yaki.store import parse_page
 from email.utils import parsedate_tz
 from config import settings
+from controllers.wiki import *
 
 log = logging.getLogger()
 
@@ -17,9 +18,12 @@ log = logging.getLogger()
 def get_token():
     access_token = memcache.get("dropbox:access_token")
     if not access_token:
-        token = DropboxToken.get_by_id('default')
-        access_token = token.access_token
-        memcache.set("dropbox:access_token", access_token)
+        try:
+            token = DropboxToken.get_by_id('default')
+            access_token = token.access_token
+            memcache.set("dropbox:access_token", access_token)
+        except:
+            log.warn("No access token.")
     return access_token
 
 
@@ -74,8 +78,14 @@ def get_files():
     })
     res = fetch(search_url)
     data = json.loads(res['data'])
+    known = get_page_mtimes()
+    log.info(known)
     for f in data:
         log.info(f)
+        path = os.path.relpath(os.path.dirname(f['path']), settings.dropbox.root_path).lower()
+        if path in known.keys():
+            # TODO: check mtime here as well
+            continue
         deferred.defer(get_single_file, f['path'])
 
 deferred.defer(get_files)
