@@ -15,10 +15,12 @@ log = logging.getLogger()
 def index():
     redirect(os.path.join(settings.wiki.base, settings.wiki.home))
 
+# this is overridden in YAML and handled internally by GAE
 @route('/static/<filepath:path>')
 @timed
 @cache_control(settings.cache.cache_control)
 def static(filepath):
     """Handles all the remanining static files"""
+    log.debug(path_for(os.path.join('themes',settings.theme,'static')))
     return static_file(filepath, root=path_for(os.path.join('themes',settings.theme,'static')))
 

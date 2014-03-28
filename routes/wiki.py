@@ -52,10 +52,11 @@ def wiki(page):
             return
         abort(404, "Page not found")
     return result
-    
+
 
 @route(settings.wiki.media + '/<item:path>')
 @timed
+@cache_memory('media', settings.cache.cache_timeout)
 @cache_control(settings.cache.cache_control)
 def media_asset(item):
     """Return page attachments"""
