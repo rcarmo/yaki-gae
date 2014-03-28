@@ -31,7 +31,7 @@ def render_markup(raw, markup=u'text/html'):
 
     def _markdown(raw):
         log.debug("Rendering Markdown")
-        return markdown.Markdown(extensions=['extra','toc','smartypants','codehilite','meta','sane_lists'], safe_mode=False).convert(raw)
+        return markdown.Markdown(extensions=['extra','toc','smarty','codehilite','meta','sane_lists'], safe_mode=False).convert(raw)
 
     def _plaintext(raw):
         log.debug("Rendering plaintext")

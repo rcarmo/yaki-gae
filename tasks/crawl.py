@@ -79,7 +79,6 @@ def get_files():
     res = fetch(search_url)
     data = json.loads(res['data'])
     known = get_page_mtimes()
-    log.info(known)
     for f in data:
         log.info(f)
         path = os.path.relpath(os.path.dirname(f['path']), settings.dropbox.root_path).lower()

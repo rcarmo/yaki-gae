@@ -24,7 +24,7 @@ from controllers.wiki import *
 @route(settings.wiki.base)
 def root():
     log.debug(settings)
-    redirect(settings.content.homepage)
+    redirect(os.path.join(settings.wiki.base,settings.wiki.home))
 
 
 @route(settings.wiki.base + '/<page:path>')

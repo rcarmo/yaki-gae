@@ -12,7 +12,7 @@ from utils import Struct, get_config, path_for, tb
 settings = Struct({
     "loglevel": logging.DEBUG,
     "content": {
-        "path": "data/main"
+        "path": "data/main",
     },
     "cache": {
         "#": "In-worker memory cache",
