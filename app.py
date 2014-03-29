@@ -20,7 +20,6 @@ from config import settings
 bottle.TEMPLATE_PATH = [os.path.join("themes", settings.theme, "views")]
 bottle.DEBUG = True
 
-
 import api, routes, controllers, tasks
 
 app = bottle.default_app()

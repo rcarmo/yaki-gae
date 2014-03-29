@@ -1,6 +1,10 @@
-# Redis keys for shared metadata
-META_PAGES = 'meta:pages'
+# memcache keys for shared metadata
+META_PAGES   = 'meta:pages'
 META_ALIASES = 'meta:aliases'
+META_MTIMES  = 'meta:mtimes'
+META_RECENT  = 'meta:recent_changes'
+META_HEADERS = 'meta:headers'
+META_TOKEN   = 'meta:token'
 
 # Characters used as separators/aliasing generation
 ALIASING_CHARS = ['','.','-','_']

@@ -38,5 +38,5 @@ def get_files():
             continue
         deferred.defer(get_single_file, f['path'])
 
-deferred.defer(get_files)
+#deferred.defer(get_files)
 

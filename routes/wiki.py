@@ -11,14 +11,20 @@ log = logging.getLogger()
 
 from bottle import route, redirect, view, static_file, abort
 from config import settings
-
+from google.appengine.api import memcache
 from utils import path_for
 from yaki import Store
 from yaki.decorators import render
 
-from decorators import timed, cache_memory, cache_control, cache_results, memoize
+from decorators import timed, cache_memory, cache_control, cache_results
 
-from controllers.wiki import *
+from controllers.wiki import WikiController
+from controllers.store import CloudStoreController
+import ids
+
+w = WikiController()
+s = CloudStoreController()
+
 
 @route('/')
 @route(settings.wiki.base)
@@ -36,20 +42,27 @@ def root():
 @render(settings.wiki.markup_overrides)
 def wiki(page):
     """Render a wiki page"""
+    # Check if 
+    if ids.is_suspicious(request):
+        abort(403, "Temporarily blocked due to suspicious activity")
 
     # should fallback to index/aliases/levensheim
+    p = w.get_page(page)
+    if not p:
+        log.debug("Attempting to retrieve %s from cloud store" % page)
+        p = s.get_page(page)
     try:
-        p = get_page(page)
         return {'headers': p.headers, 'data': p.body, 'content-type': p.mime_type}
     except Exception, e:
-        original = resolve_alias(page)
+        log.debug("Attempting to resolve aliases for %s" % page)
+        original = w.resolve_alias(page)
         if original:
             redirect("%s/%s" % (settings.wiki.base, original))
-        close = get_close_matches_for_page(page)
-        log.info("Close matches: %s" % close)
+        log.debug("Attempting to find close matches for %s" % page)
+        close = w.get_close_matches_for_page(page)
         if len(close):
             redirect("%s/%s" % (settings.wiki.base, close[0]))
-            return
+        ids.flag(request)
         abort(404, "Page not found")
     return result
 
