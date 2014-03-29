@@ -150,7 +150,7 @@ def jsonp(callback):
     return wrapper
 
 
-def memoize(f):
+def memoize_function(f):
     """Memoization decorator for functions taking one or more arguments"""
 
     class memodict(dict):
@@ -161,6 +161,32 @@ def memoize(f):
             return self[args]
 
         def __missing__(self, key):
-            ret = self[key] = self.f(*key)
-            return ret
+            res = self[key] = self.f(*key)
+            return res
     return memodict(f)
+
+
+
+class memoize_method(object):
+    """cache the return value of a method"""
+
+    def __init__(self, f):
+        self.f = f
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self.f
+        return functools.partial(self, obj)
+
+    def __call__(self, *args, **kw):
+        obj = args[0]
+        try:
+            cache = obj.__cache
+        except AttributeError:
+            cache = obj.__cache = {}
+        key = (self.func, args[1:], frozenset(kw.items()))
+        try:
+            res = cache[key]
+        except KeyError:
+            res = cache[key] = self.func(*args, **kw)
+        return res
