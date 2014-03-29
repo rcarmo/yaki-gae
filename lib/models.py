@@ -14,4 +14,5 @@ class Page(ndb.Model):
     tags      = ndb.StringProperty()   # tags, for indexing
     headers   = ndb.JsonProperty()     # all other headers, preserved for posterity
     body      = ndb.TextProperty()     # raw markup
+    plaintext = ndb.TextProperty()     # plaintext, for indexing
     mime_type = ndb.TextProperty()
