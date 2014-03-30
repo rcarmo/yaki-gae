@@ -20,7 +20,7 @@ import cookielib
 from collections import defaultdict
 from utils.core import tb
 from config import settings
-from decorators import memoize_function as memoize
+from decorators import memoize
 from datetime import datetime
 
 # Initialize debug level upon module load

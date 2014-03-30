@@ -22,10 +22,13 @@ from yaki.constants import *
 
 log = logging.getLogger()
 
+TOKEN_KEY = "default"
+
 _urls = Struct({
-    "files": "https://api-content.dropbox.com/1/files/dropbox/%s?%s",
-    "auth" : "https://www.dropbox.com/1/oauth2/authorize",
-    "token": "https://api.dropbox.com/1/oauth2/token"
+    "files"   : "https://api-content.dropbox.com/1/files/dropbox/%s?%s",
+    "metadata": "https://api.dropbox.com/1/metadata/dropbox/%s?%s",
+    "auth"    : "https://www.dropbox.com/1/oauth2/authorize",
+    "token"   : "https://api.dropbox.com/1/oauth2/token"
 })
 
 
@@ -43,32 +46,71 @@ class CloudStoreController:
         if not token:
             token = CloudStoreController.get_token()
         self.token = token
+        self.valid_indexes = ["index." + ext for ext in BASE_TYPES.keys()]
 
 
     @staticmethod
-    @memoize_function
+    @memoize
     def get_token():
-        access_token = memcache.get(META_TOKEN)
+        access_token = memcache.get(TOKEN_KEY, namespace=NS_TOKEN)
         if not access_token:
             log.warn("No access token.")
             try:
-                token = DropboxToken.get_by_id('default')
+                token = DropboxToken.get_by_id(TOKEN_KEY)
                 access_token = token.access_token
-                memcache.set(META_TOKEN, access_token)
+                memcache.set(TOKEN_KEY, access_token, namespace=NS_TOKEN)
             except Exception as e:
                 log.error("Unable to retrieve token from NDB: %s" % e)
 
         return access_token
 
 
+    @memoize
+    def get_metadata(self, path):
+        if not self.token:
+            log.debug("No token")
+            return None
+
+        metadata = memcache.get(path, namespace=NS_CLOUD_METADATA)
+        params = {"access_token": self.token}
+        if metadata:
+            params["hash"] = metadata["hash"]
+        metadata_url = _urls.metadata % (os.path.normpath(os.path.join(settings.dropbox.root_path, path)),
+                                         urllib.urlencode(params))
+        log.debug(metadata_url)
+        r = fetch(metadata_url)
+        
+        if r['status'] == 200:
+            metadata = json.loads(r["data"])
+            memcache.set(path, metadata, namespace=NS_CLOUD_METADATA)
+
+        return metadata # also valid for 304/404 return values
+
+
+    @memoize
     def get_page(self, page):
         """Return a single page from the cloud store, storing it locally"""
 
         if not self.token:
             log.debug("No token")
             return None
+
+        # get the folder contents
+        metadata = self.get_metadata(page)
+        if not metadata:
+            return None
+
+        markup = None
+        for i in metadata['contents']:
+            if not i['is_dir']:
+                if os.path.basename(i['path']) in self.valid_indexes:
+                    markup = i['path']
+                    break
+
+        if not markup:
+            return None
         
-        get_url = _urls.files % (os.path.normpath(os.path.join(settings.dropbox.root_path, page, "index.txt")), urllib.urlencode({"access_token": self.token}))
+        get_url = _urls.files % (markup, urllib.urlencode({"access_token": self.token}))
         log.debug(get_url)
         r = fetch(get_url)
 
@@ -101,6 +143,6 @@ class CloudStoreController:
             }
             p = Page(**params)
             p.put()
-            memcache.set("meta:%s" % params['id'], params['headers'])
+            memcache.set(params['id'], params['headers'], namespace=NS_PAGE_METADATA)
             return p
         return None

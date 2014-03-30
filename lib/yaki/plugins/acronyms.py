@@ -13,11 +13,11 @@ log = logging.getLogger()
 
 import urlparse, re, time
 from bs4 import BeautifulSoup, SoupStrainer
-from yaki import Store, plugin, render_markup
+from yaki import plugin, render_markup
+from controllers.wiki import WikiController
 from utils.core import Singleton
 
 meta_page = 'meta/Acronyms'
-
 
 @plugin
 class Acronyms:
@@ -35,9 +35,9 @@ class Acronyms:
 
     def load(self):
         # Load acronym map
-        s = Store()
+        w = WikiController()
         try:
-            page = s.get_page(self.meta_page)
+            page = w.get_page(self.meta_page)
         except:
             log.warn("no %s definitions" % meta_page)
             return
@@ -58,8 +58,8 @@ class Acronyms:
     
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
-        s = Store()
-        if (self.mtime < s.mtime(self.meta_page)):
+        w = WikiController
+        if (self.mtime < w.mtime(self.meta_page)):
             self.load()
         try:
             acronym = ''.join(tag.find_all(text=re.compile('.+'))).strip().lower()

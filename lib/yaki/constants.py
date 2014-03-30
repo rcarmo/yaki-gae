@@ -1,10 +1,10 @@
 # memcache keys for shared metadata
-META_PAGES   = 'meta:pages'
-META_ALIASES = 'meta:aliases'
-META_MTIMES  = 'meta:mtimes'
-META_RECENT  = 'meta:recent_changes'
-META_HEADERS = 'meta:headers'
-META_TOKEN   = 'meta:token'
+NS_PAGES          = 'pages'
+NS_ALIASES        = 'aliases'
+NS_PAGE_METADATA  = 'page_metadata'
+NS_TOKEN          = 'token'
+NS_IDS            = 'ids'
+NS_CLOUD_METADATA = 'cloud_metadata'
 
 # Characters used as separators/aliasing generation
 ALIASING_CHARS = ['','.','-','_']

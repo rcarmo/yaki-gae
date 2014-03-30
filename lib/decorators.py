@@ -18,28 +18,27 @@ log = logging.getLogger()
 gmt_format_string = "%a, %d %b %Y %H:%M:%S GMT"
 
 
-def cache_memory(prefix='url', ttl=3600):
+def cache_memory(ns='url', ttl=3600):
     """Cache route results in Memcache"""
 
     def decorator(callback):
         @functools.wraps(callback)
         def wrapper(*args, **kwargs):
             try:
-                item = json.loads(memcache.get('%s:%s' % (prefix,request.urlparts.path)))
+                item = json.loads(memcache.get(request.urlparts.path, namespace=ns))
                 body = item['body']
                 for h in item['headers']:
                     response.set_header(str(h), item['headers'][h])
                 response.set_header('X-Source', 'Memcache')
             except Exception as e:
-                log.debug("Cache miss for %s" % request.urlparts.path)
+                log.debug("Cache miss for %s: %s" % (request.urlparts.path, e))
                 body = callback(*args, **kwargs)
                 item = {
                     'body': body,
                     'headers': dict(response.headers),
                     'mtime': int(time.time())
                 }
-                k = '%s:%s' % (prefix, request.urlparts.path)
-                memcache.set(k, json.dumps(item), time=ttl)
+                memcache.set(request.urlparts.path, json.dumps(item), time=ttl, namespace=ns)
             return body
         return wrapper
     return decorator
@@ -150,7 +149,7 @@ def jsonp(callback):
     return wrapper
 
 
-def memoize_function(f):
+def memoize(f):
     """Memoization decorator for functions taking one or more arguments"""
 
     class memodict(dict):
@@ -163,30 +162,10 @@ def memoize_function(f):
         def __missing__(self, key):
             res = self[key] = self.f(*key)
             return res
+
+        def __repr__(self):
+            return self.f.__doc__
+        
+        def __get__(self, obj, objtype):
+            return functools.partial(self.__call__, obj)
     return memodict(f)
-
-
-
-class memoize_method(object):
-    """cache the return value of a method"""
-
-    def __init__(self, f):
-        self.f = f
-
-    def __get__(self, obj, objtype=None):
-        if obj is None:
-            return self.f
-        return functools.partial(self, obj)
-
-    def __call__(self, *args, **kw):
-        obj = args[0]
-        try:
-            cache = obj.__cache
-        except AttributeError:
-            cache = obj.__cache = {}
-        key = (self.func, args[1:], frozenset(kw.items()))
-        try:
-            res = cache[key]
-        except KeyError:
-            res = cache[key] = self.func(*args, **kw)
-        return res

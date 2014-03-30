@@ -9,7 +9,7 @@ import os, sys, logging
 
 log = logging.getLogger()
 
-from bottle import route, redirect, view, static_file, abort
+from bottle import request, route, redirect, view, static_file, abort
 from config import settings
 from google.appengine.api import memcache
 from utils import path_for
@@ -20,10 +20,11 @@ from decorators import timed, cache_memory, cache_control, cache_results
 
 from controllers.wiki import WikiController
 from controllers.store import CloudStoreController
-import ids
+from controllers.ids import IDSController
 
 w = WikiController()
 s = CloudStoreController()
+ids = IDSController()
 
 
 @route('/')
@@ -42,7 +43,6 @@ def root():
 @render(settings.wiki.markup_overrides)
 def wiki(page):
     """Render a wiki page"""
-    # Check if 
     if ids.is_suspicious(request):
         abort(403, "Temporarily blocked due to suspicious activity")
 
@@ -53,7 +53,7 @@ def wiki(page):
         p = s.get_page(page)
     try:
         return {'headers': p.headers, 'data': p.body, 'content-type': p.mime_type}
-    except Exception, e:
+    except Exception as e:
         log.debug("Attempting to resolve aliases for %s" % page)
         original = w.resolve_alias(page)
         if original:
