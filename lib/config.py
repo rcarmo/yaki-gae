@@ -33,6 +33,11 @@ settings = Struct({
         "markup_overrides": { "text/plain": "text/x-textile" }
     },
     "dropbox": {
+        "preload": {
+            "meta" : 100,
+            "blog" : 100,
+            "links": 100
+        },
         "app_key": "********",
         "app_secret": "********",
         "root_path": ""

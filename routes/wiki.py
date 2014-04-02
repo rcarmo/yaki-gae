@@ -34,7 +34,7 @@ def root():
     redirect(os.path.join(settings.wiki.base,settings.wiki.home))
 
 
-@route(settings.wiki.base + '/<page:path>')
+@get(settings.wiki.base + '/<page:path>')
 @timed
 @cache_results(settings.cache.worker_timeout)
 @cache_memory('html', settings.cache.cache_timeout)
@@ -67,7 +67,7 @@ def wiki(page):
     return result
 
 
-@route(settings.wiki.media + '/<item:path>')
+@get(settings.wiki.media + '/<item:path>')
 @timed
 @cache_memory('media', settings.cache.cache_timeout)
 @cache_control(settings.cache.cache_control)
