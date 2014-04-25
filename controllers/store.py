@@ -8,17 +8,16 @@ Published under the MIT license.
 """
 
 import os, sys, logging, urllib
-from config import settings
+from config import settings, BASE_TYPES, NS_TOKEN
 from datetime import datetime
-from decorators import *
 from email.utils import parsedate_tz
 from google.appengine.api import memcache
-from yaki.store import parse_page
 from models import DropboxToken, Page
+from utils import Struct
 from utils.urlkit import fetch
 from utils.timekit import parse_date
-from utils import Struct
-from constants import *
+from utils.decorators import memoize
+from utils.markup import parse_rfc822
 
 log = logging.getLogger()
 
@@ -117,7 +116,7 @@ class CloudStoreController:
         if r['status'] == 200:
             metadata = json.loads(r['x-dropbox-metadata'])
             try:
-                headers, body, mime_type = parse_page(r['data'])
+                headers, body, mime_type = parse_rfc822(r['data'])
             except Exception as e:
                 log.error("Could not parse %s: %s" % (path, e))
                 return None

@@ -13,9 +13,10 @@ log = logging.getLogger()
 
 import urlparse, re, posixpath
 from bs4 import BeautifulSoup
-from yaki import Store, plugin
+from plugins import plugin
 from utils.core import Singleton
 from utils.timekit import time_since
+from controllers.wiki import WikiController as wc
 
 @plugin
 class BaseURI:
@@ -72,12 +73,12 @@ class BaseURI:
         known = False
 
         if schema == '':
-            uri = i.resolve_alias(path)
+            uri = wc.resolve_alias(path)
 
             if uri != path:
                 path = tag['href'] = uri
 
-            if s.exists(uri) or uri in i.all_pages:
+            if s.exists(uri) or uri in wc.get_all_pages:
                 known = True
 
         

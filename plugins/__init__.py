@@ -35,7 +35,7 @@ class Registry:
             if fnmatch.fnmatch(f, "*.py") and (f[0] != '_'):
                 (modname,ext) = os.path.basename(f).rsplit('.', 1)
                 try:
-                    importlib.import_module('.' + modname,'yaki.plugins')
+                    importlib.import_module('.' + modname, 'plugins')
                 except ImportError as e:
                     log.error(tb())
                     pass
@@ -47,6 +47,8 @@ class Registry:
 
     @classmethod
     def register(self, cls):
+        """Registers a plugin"""
+
         if cls not in self.registered:
             self.registered.append(cls)
         for tag in cls.tags:
@@ -59,6 +61,7 @@ class Registry:
     @classmethod
     def apply_all(self, pagename, soup, request=None, response=None, indexing=False):
         """Runs all markup plugins that process specific tags"""
+
         for tagname in self.plugins['markup'].keys():
             if tagname != 'plugin':
                 applicable = self.plugins['markup'][tagname]

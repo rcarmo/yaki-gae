@@ -15,17 +15,15 @@ from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from difflib import get_close_matches
 from models import Page
-from constants import *
 from utils.core import Singleton
 from utils.decorators import memoize
+from config import NS_PAGE_METADATA
 
 RECENT_CHANGES = "recent_changes"
 MTIMES         = "mtimes"
 HEADERS        = "headers"
 
 class WikiController:
-
-    __metaclass__ = Singleton
 
     def __init__(self):
         pass
@@ -100,4 +98,4 @@ class WikiController:
     @staticmethod
     @memoize
     def resolve_alias(path):
-        return None
+        return path

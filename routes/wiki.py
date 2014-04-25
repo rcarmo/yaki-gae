@@ -12,10 +12,9 @@ log = logging.getLogger()
 from bottle import request, get, redirect, view, static_file, abort
 from config import settings
 from google.appengine.api import memcache
-from utils import path_for
-from yaki import Store
-from yaki.decorators import render
+from .decorators import render
 
+from utils import path_for
 from utils.decorators import timed, cache_memory, cache_control, cache_results
 
 from controllers.wiki import WikiController

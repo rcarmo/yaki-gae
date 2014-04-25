@@ -10,7 +10,8 @@ import functools, urlparse
 from bottle import request, response
 from bs4 import BeautifulSoup
 
-from yaki import render_markup, Registry
+from plugins import Registry
+from utils.markup import render_markup
 from utils.stringkit import munge_string
 
 plugins = Registry()

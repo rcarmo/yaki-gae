@@ -18,6 +18,24 @@ def sanitize_title(title):
     return re.sub("[\W+]","-",title.lower())
 
 
+def parse_rfc822(buffer, mime_type='text/plain'):
+    """Helper function for parsing metadata out of a plaintext buffer"""
+
+    headers = {}
+    markup  = ''
+    if mime_type in ['text/plain', 'text/x-textile', 'text/x-markdown']:
+        try:
+            (header_lines,markup) = buffer.split("\n\n", 1)
+            for header in header_lines.strip().split("\n"):
+                (name, value) = header.strip().split(":", 1)
+                headers[name.lower().strip()] = unicode(value.strip())
+            if 'content-type' in headers:
+                mime_type = headers['content-type']
+        except:
+            raise TypeError, "Invalid file format."
+    return headers, markup, mime_type
+
+
 def render_markup(raw, markup=u'text/html'):
     """Turn markup into nice HTML"""
 

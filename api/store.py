@@ -13,7 +13,7 @@ log = logging.getLogger()
 from bottle import route, get, put, post, delete, request, response, abort
 import api
 
-from decorators import timed, jsonp, cache_results, cache_control
+from utils.decorators import timed, jsonp, cache_results, cache_control
 
 # local context
 prefix = api.prefix + '/pages'
