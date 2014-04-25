@@ -10,6 +10,7 @@ from bottle import request, response, route, abort
 import time, binascii, hashlib, email.utils, functools, json
 import logging
 from utils import tb
+from base64 import b64encode, b64decode
 
 from google.appengine.api import memcache
 
@@ -26,7 +27,10 @@ def cache_memory(ns='url', ttl=3600):
         def wrapper(*args, **kwargs):
             try:
                 item = json.loads(memcache.get(request.urlparts.path, namespace=ns))
-                body = item['body']
+                if 'image' in item['content-type']:
+                    body = b64decode(item['body'])
+                else:
+                    body = item['body']
                 for h in item['headers']:
                     response.set_header(str(h), item['headers'][h])
                 response.set_header('X-Source', 'Memcache')
@@ -34,11 +38,15 @@ def cache_memory(ns='url', ttl=3600):
                 log.debug("Cache miss for %s: %s" % (request.urlparts.path, e))
                 body = callback(*args, **kwargs)
                 item = {
-                    'body': body,
+                    'body': b64encode(body) if 'image' in response.content_type else body,
                     'headers': dict(response.headers),
-                    'mtime': int(time.time())
+                    'mtime': int(time.time()),
+                    'content-type': response.content_type
                 }
-                memcache.set(request.urlparts.path, json.dumps(item), time=ttl, namespace=ns)
+                try:
+                    memcache.set(request.urlparts.path, json.dumps(item), time=ttl, namespace=ns)
+                except Exception as e:
+                    log.debug("Could not cache %s: %s" % (request.urlparts.path, e))
             return body
         return wrapper
     return decorator

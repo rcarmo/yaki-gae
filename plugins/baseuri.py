@@ -76,12 +76,12 @@ class BaseURI:
             if uri != path:
                 path = tag['href'] = uri
 
-            if s.exists(uri) or uri in wc.get_all_pages:
+            if uri in wc.get_page_mtimes().keys():
                 known = True
 
         
         if(schema == ''):
-            if wc.is_attachment(pagename, path):
+            if wc.get_attachment(pagename, path):
                 tag['href'] = unicode(self.media + pagename + "/" + path)
                 tag['title'] = self.schemas['attach']['title'] % {'uri':os.path.basename(path)}
                 tag['class'] = self.schemas['attach']['class']

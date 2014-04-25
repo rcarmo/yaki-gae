@@ -9,7 +9,7 @@ import os, sys, logging
 
 log = logging.getLogger()
 
-from bottle import request, get, redirect, view, static_file, abort
+from bottle import request, response, get, redirect, view, static_file, abort
 from config import settings
 from google.appengine.api import memcache
 from .decorators import render

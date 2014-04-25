@@ -9,7 +9,7 @@ Published under the MIT license.
 
 import os, os.path, sys, logging, cgi, urlparse
 from config import settings
-from yaki import Index, Store, plugin
+from plugins import plugin
 from utils.core import Singleton
 
 log = logging.getLogger()
@@ -38,8 +38,5 @@ class ImageWikiPlugin:
         if schema: # TODO: deal with cid: schema
             return True
             
-        s = Store()
-        if s.is_attachment(pagename, path):
-            tag['src'] = unicode(cgi.escape(os.path.join(settings.wiki.media, pagename, path)))
-            return False # no further processing required
-        return True
+        tag['src'] = unicode(cgi.escape(os.path.join(settings.wiki.media, pagename, path)))
+        return False # no further processing required

@@ -14,7 +14,7 @@ log = logging.getLogger()
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from difflib import get_close_matches
-from models import Page
+from models import Page, Attachment
 from utils.core import Singleton
 from utils.decorators import memoize
 from config import NS_PAGE_METADATA

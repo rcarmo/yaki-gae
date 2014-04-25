@@ -7,12 +7,12 @@ Created by Rui Carmo on 2014-03-29.
 Published under the MIT license.
 """
 
-import os, sys, logging, urllib
-from config import settings, BASE_TYPES, NS_TOKEN
+import os, sys, logging, urllib, json, time
+from config import settings, BASE_TYPES, NS_TOKEN, NS_CLOUD_METADATA, NS_PAGE_METADATA
 from datetime import datetime
 from email.utils import parsedate_tz
 from google.appengine.api import memcache
-from models import DropboxToken, Page
+from models import DropboxToken, Page, Attachment
 from utils import Struct
 from utils.urlkit import fetch
 from utils.timekit import parse_date
@@ -175,11 +175,25 @@ class CloudStoreController:
     def get_attachment(self, page, filename):
         """Return an attachment from the cloud store, storing it locally"""
 
-        if not self.is_attachment(page, filename):
+        if not self.token:
+            log.debug("No token")
             return None
 
-        target = os.path.join(page, filename)
-        
+        # get the folder contents
+        metadata = self.get_metadata(page)
+        if not metadata:
+            return None
+
+        target = None
+        for i in metadata['contents']:
+            if not i['is_dir']:
+                if os.path.basename(i['path']) == filename:
+                    target = i['path']
+                    break
+
+        if not target:
+            return None
+
         get_url = _urls.files % (target, urllib.urlencode({"access_token": self.token}))
         log.debug(get_url)
         r = fetch(get_url)
@@ -196,8 +210,8 @@ class CloudStoreController:
                 "path"     : page,
                 "filename" : filename,
                 "mtime"    : mtime,
-                "data"     : body,
-                "mime_type": mime_type,
+                "data"     : r['data'],
+                "mime_type": metadata['mime_type'],
             }
             a = Attachment(**params)
             a.put()

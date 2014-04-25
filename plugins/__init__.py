@@ -37,7 +37,7 @@ class Registry:
                 try:
                     importlib.import_module('.' + modname, 'plugins')
                 except ImportError as e:
-                    log.error(tb())
+                    log.error("%s: %s",modname,tb())
                     pass
 
 
