@@ -73,4 +73,11 @@ def wiki(page):
 def media_asset(item):
     """Return page attachments"""
 
-    return static_file(item, root=path_for(settings.content.path))
+    a = w.get_attachment(os.path.dirname(item), os.path.basename(item))
+    if not a:
+        a = s.get_attachment(os.path.dirname(item), os.path.basename(item))
+        if not a:
+            abort(404, "File not found")
+            
+    response.content_type = a.mime_type
+    return a.data

@@ -87,6 +87,14 @@ class WikiController:
 
     @staticmethod
     @memoize
+    def get_attachment(path, filename):
+        """Returns a single page"""
+
+        return Attachment.get_by_id(os.path.join(path,filename).lower())
+
+
+    @staticmethod
+    @memoize
     def mtime(path):
         """Returns a single page's modification time"""
         mtimes = WikiController.get_page_mtimes()
@@ -100,10 +108,3 @@ class WikiController:
     def resolve_alias(path):
         # TODO: flesh this out using a global alias table
         return path
-
-
-    @staticmethod
-    @memoize
-    def is_attachment(path, attachment):
-        return path
-

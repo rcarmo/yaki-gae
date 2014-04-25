@@ -1,27 +1,27 @@
-from google.appengine.ext import ndb
+from google.appengine.ext.ndb import Model, StringProperty, DateTimeProperty, JsonProperty, TextProperty, BlobProperty
 
-class DropboxToken(ndb.Model):
-    access_token = ndb.StringProperty()
-    token_type   = ndb.StringProperty()
-    uid          = ndb.StringProperty()
-
-
-class Page(ndb.Model):
-    mtime     = ndb.DateTimeProperty()
-    ctime     = ndb.DateTimeProperty()
-    path      = ndb.StringProperty()   # for later writeback to cloud store
-    title     = ndb.StringProperty()   # for indexing
-    tags      = ndb.StringProperty()   # tags, for indexing
-    headers   = ndb.JsonProperty()     # all other headers, preserved for posterity
-    body      = ndb.TextProperty()     # raw markup
-    plaintext = ndb.TextProperty()     # plaintext, for indexing
-    mime_type = ndb.TextProperty()
+class DropboxToken(Model):
+    access_token = StringProperty()
+    token_type   = StringProperty()
+    uid          = StringProperty()
 
 
-class Attachment(ndb.Model):
-    mtime     = ndb.DateTimeProperty()
-    ctime     = ndb.DateTimeProperty()
-    path      = ndb.StringProperty()   # for later writeback to cloud store
-    data      = ndb.BlobProperty()     # raw data
-    mime_type = ndb.TextProperty()
+class Page(Model):
+    mtime     = DateTimeProperty()
+    ctime     = DateTimeProperty()
+    path      = StringProperty()   # for later writeback to cloud store
+    title     = StringProperty()   # for indexing
+    tags      = StringProperty()   # tags, for indexing
+    headers   = JsonProperty()     # all other headers, preserved for posterity
+    body      = TextProperty()     # raw markup
+    plaintext = TextProperty()     # plaintext, for indexing
+    mime_type = TextProperty()
+
+
+class Attachment(Model):
+    mtime     = DateTimeProperty()
+    path      = StringProperty()   # for later writeback to cloud store
+    filename  = StringProperty()   # for later writeback to cloud store
+    data      = BlobProperty()     # raw data
+    mime_type = TextProperty()
 

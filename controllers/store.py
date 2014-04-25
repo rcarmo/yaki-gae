@@ -147,8 +147,8 @@ class CloudStoreController:
 
 
     @memoize
-    def get_attachment(self, page, filename):
-        """Return an attachment from the cloud store, storing it locally"""
+    def is_attachment(self, page, filename):
+        """Check if a given file exists inside a page folder"""
 
         if not self.token:
             log.debug("No token")
@@ -159,7 +159,7 @@ class CloudStoreController:
         if not metadata:
             return None
 
-        markup = None
+        target = None
         for i in metadata['contents']:
             if not i['is_dir']:
                 if os.path.basename(i['path']) == filename:
@@ -167,7 +167,18 @@ class CloudStoreController:
                     break
 
         if not target:
+            return False
+        return True
+
+
+    @memoize
+    def get_attachment(self, page, filename):
+        """Return an attachment from the cloud store, storing it locally"""
+
+        if not self.is_attachment(page, filename):
             return None
+
+        target = os.path.join(page, filename)
         
         get_url = _urls.files % (target, urllib.urlencode({"access_token": self.token}))
         log.debug(get_url)
@@ -178,23 +189,18 @@ class CloudStoreController:
 
             # mtime is taken from cloud store metadata
             mtime = parse_dropbox_date(metadata['modified'])
-            ctime = headers.get('created', None)
-            if ctime:
-                ctime = datetime.fromtimestamp(parse_date(ctime))
 
             id   = os.path.join(page.lower(),filename.lower())
             params = {
                 "id"       : id,
                 "path"     : page,
-                "ctime"    : ctime,
+                "filename" : filename,
                 "mtime"    : mtime,
                 "data"     : body,
                 "mime_type": mime_type,
             }
             a = Attachment(**params)
             a.put()
-            #TODO: add list of attachments to memcache?
-            #memcache.set(params['id'], params['headers'], namespace=NS_PAGE_METADATA)
             return a
         return None
 
