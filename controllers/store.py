@@ -132,7 +132,6 @@ class CloudStoreController:
                 "id"       : id,
                 "path"     : page,
                 "ctime"    : ctime,
-                "ctime"    : ctime,
                 "mtime"    : mtime,
                 "title"    : headers.get('title', 'Untitled'),
                 "tags"     : headers.get('tags', None),
@@ -145,3 +144,57 @@ class CloudStoreController:
             memcache.set(params['id'], params['headers'], namespace=NS_PAGE_METADATA)
             return p
         return None
+
+
+    @memoize
+    def get_attachment(self, page, filename):
+        """Return an attachment from the cloud store, storing it locally"""
+
+        if not self.token:
+            log.debug("No token")
+            return None
+
+        # get the folder contents
+        metadata = self.get_metadata(page)
+        if not metadata:
+            return None
+
+        markup = None
+        for i in metadata['contents']:
+            if not i['is_dir']:
+                if os.path.basename(i['path']) == filename:
+                    target = i['path']
+                    break
+
+        if not target:
+            return None
+        
+        get_url = _urls.files % (target, urllib.urlencode({"access_token": self.token}))
+        log.debug(get_url)
+        r = fetch(get_url)
+
+        if r['status'] == 200:
+            metadata = json.loads(r['x-dropbox-metadata'])
+
+            # mtime is taken from cloud store metadata
+            mtime = parse_dropbox_date(metadata['modified'])
+            ctime = headers.get('created', None)
+            if ctime:
+                ctime = datetime.fromtimestamp(parse_date(ctime))
+
+            id   = os.path.join(page.lower(),filename.lower())
+            params = {
+                "id"       : id,
+                "path"     : page,
+                "ctime"    : ctime,
+                "mtime"    : mtime,
+                "data"     : body,
+                "mime_type": mime_type,
+            }
+            a = Attachment(**params)
+            a.put()
+            #TODO: add list of attachments to memcache?
+            #memcache.set(params['id'], params['headers'], namespace=NS_PAGE_METADATA)
+            return a
+        return None
+

@@ -98,4 +98,12 @@ class WikiController:
     @staticmethod
     @memoize
     def resolve_alias(path):
+        # TODO: flesh this out using a global alias table
         return path
+
+
+    @staticmethod
+    @memoize
+    def is_attachment(path, attachment):
+        return path
+

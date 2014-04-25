@@ -52,8 +52,6 @@ class BaseURI:
         pass
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
-        s = Store()
-
         try:
             uri = tag['href']
         except KeyError:
@@ -83,7 +81,7 @@ class BaseURI:
 
         
         if(schema == ''):
-            if s.is_attachment(pagename, path):
+            if wc.is_attachment(pagename, path):
                 tag['href'] = unicode(self.media + pagename + "/" + path)
                 tag['title'] = self.schemas['attach']['title'] % {'uri':os.path.basename(path)}
                 tag['class'] = self.schemas['attach']['class']

@@ -16,3 +16,12 @@ class Page(ndb.Model):
     body      = ndb.TextProperty()     # raw markup
     plaintext = ndb.TextProperty()     # plaintext, for indexing
     mime_type = ndb.TextProperty()
+
+
+class Attachment(ndb.Model):
+    mtime     = ndb.DateTimeProperty()
+    ctime     = ndb.DateTimeProperty()
+    path      = ndb.StringProperty()   # for later writeback to cloud store
+    data      = ndb.BlobProperty()     # raw data
+    mime_type = ndb.TextProperty()
+
