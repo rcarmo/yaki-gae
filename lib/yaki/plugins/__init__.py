@@ -14,7 +14,6 @@ log = logging.getLogger()
 from config import settings
 from utils.core import Singleton, tb
 
-
 def plugin(cls):
     """Class decorator for adding plugins to the registry"""
     

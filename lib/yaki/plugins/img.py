@@ -27,6 +27,7 @@ class ImageWikiPlugin:
 
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
+        log.debug("%s %s" % (pagename, tag))
         try:
             uri = tag['src']
             schema, _, path, _, _, _ = urlparse.urlparse(uri)

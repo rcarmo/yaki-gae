@@ -10,7 +10,7 @@ Published under the MIT license.
 import os, sys, logging
 from bottle import request
 from google.appengine.api import memcache
-from yaki.constants import *
+from constants import *
 
 log = logging.getLogger()
 

@@ -18,7 +18,7 @@ from models import DropboxToken, Page
 from utils.urlkit import fetch
 from utils.timekit import parse_date
 from utils import Struct
-from yaki.constants import *
+from constants import *
 
 log = logging.getLogger()
 

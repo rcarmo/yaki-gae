@@ -13,7 +13,7 @@ log = logging.getLogger()
 
 import urlparse, re, posixpath
 from bs4 import BeautifulSoup
-from yaki import Index, Store, plugin
+from yaki import Store, plugin
 from utils.core import Singleton
 from utils.timekit import time_since
 
@@ -51,7 +51,7 @@ class BaseURI:
         pass
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
-        i, s = Index(), Store()
+        s = Store()
 
         try:
             uri = tag['href']

@@ -9,14 +9,14 @@ import os, sys, logging
 
 log = logging.getLogger()
 
-from bottle import request, route, redirect, view, static_file, abort
+from bottle import request, get, redirect, view, static_file, abort
 from config import settings
 from google.appengine.api import memcache
 from utils import path_for
 from yaki import Store
 from yaki.decorators import render
 
-from decorators import timed, cache_memory, cache_control, cache_results
+from utils.decorators import timed, cache_memory, cache_control, cache_results
 
 from controllers.wiki import WikiController
 from controllers.store import CloudStoreController
@@ -27,8 +27,8 @@ s = CloudStoreController()
 ids = IDSController()
 
 
-@route('/')
-@route(settings.wiki.base)
+@get('/')
+@get(settings.wiki.base)
 def root():
     log.debug(settings)
     redirect(os.path.join(settings.wiki.base,settings.wiki.home))

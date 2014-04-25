@@ -11,20 +11,21 @@ import os, sys, logging
 
 log = logging.getLogger()
 
-from yaki import Store
-from yaki.constants import *
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from difflib import get_close_matches
 from models import Page
-from decorators import *
-from yaki.constants import *
+from constants import *
+from utils.core import Singleton
+from utils.decorators import memoize
 
 RECENT_CHANGES = "recent_changes"
 MTIMES         = "mtimes"
 HEADERS        = "headers"
 
 class WikiController:
+
+    __metaclass__ = Singleton
 
     def __init__(self):
         pass
