@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/rcarmo/yaki-gae.png?label=ready&title=Ready)](https://waffle.io/rcarmo/yaki-gae)
 yaki-gae
 ========
 
