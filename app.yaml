@@ -10,7 +10,7 @@ builtins:
 
 handlers:
 - url: /static
-  static_dir: static/themes/ink/static
+  static_dir: themes/ink/static
 
 - url: /.*
   script: app.app

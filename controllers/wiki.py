@@ -119,7 +119,12 @@ class WikiController:
             return alias
         page_aliases = WikiController.get_page_aliases()
         alias = page_aliases.get(path)
-        return alias
+        if alias:
+            return alias
+        # most common case that may not be in our caches yet
+        if "_" in path:
+            return path.replace("_"," ")
+        return None
 
 
     @staticmethod
