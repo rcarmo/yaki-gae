@@ -71,12 +71,12 @@ class BaseURI:
         known = False
 
         if schema == '':
-            uri = wc.resolve_alias(path)
+            alias = wc.resolve_alias(path)
 
-            if uri != path:
-                path = tag['href'] = uri
+            if alias and alias != path:
+                path = tag['href'] = uri = alias
 
-            if uri in wc.get_page_mtimes().keys():
+            if path in wc.get_page_mtimes().keys():
                 known = True
 
         

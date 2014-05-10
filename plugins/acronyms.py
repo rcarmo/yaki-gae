@@ -43,7 +43,7 @@ class Acronyms:
             return
 
         # prepare to parse only <pre> tags (so that we can have multiple maps organized by sections)
-        soup = BeautifulSoup(render_markup(page['data'],page['content-type']))
+        soup = BeautifulSoup(render_markup(page.body, page.mime_type))
 
         all_sections = u''.join(map(lambda t: str(t.string), soup.find_all('pre'))).strip()
         # now that we have the full map, let's build the schema hash
