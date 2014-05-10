@@ -7,7 +7,7 @@ Description: Utility functions for handling date and time information
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, time, math, re, logging
+import os, sys, time, math, re, logging, datetime
 import gettext
 gettext.textdomain('date')
 _ = gettext.gettext
@@ -178,3 +178,9 @@ def time_since(older=None, newer=None, detail=2):
         interval = interval - count * seconds
     output = output[:-2]
     return output
+
+
+def datetime_to_epoch(dt):
+    epoch = datetime.datetime.utcfromtimestamp(0)
+    delta = dt - epoch
+    return delta.total_seconds()
