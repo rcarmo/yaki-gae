@@ -17,11 +17,15 @@ from difflib import get_close_matches
 from models import Page, Attachment
 from utils.core import Singleton
 from utils.decorators import memoize
-from config import NS_PAGE_METADATA
+from utils.markup import render_markup
+from config import settings, NS_PAGE_METADATA
+from bs4 import BeautifulSoup
+import HTMLParser
 
 RECENT_CHANGES = "recent_changes"
 MTIMES         = "mtimes"
 HEADERS        = "headers"
+ALIASES        = "aliases"
 
 class WikiController:
 
@@ -106,5 +110,34 @@ class WikiController:
     @staticmethod
     @memoize
     def resolve_alias(path):
-        # TODO: flesh this out using a global alias table
-        return path
+        aliases = WikiController.get_page_aliases()
+        return aliases.get(path)
+
+
+    @staticmethod
+    def get_page_aliases():
+        result = memcache.get(ALIASES, namespace=NS_PAGE_METADATA)
+        if not result:
+            result = {}
+            try:
+                page = WikiController.get_page(settings.wiki.aliases)
+            except:
+                log.warn("Aliases: no %s definitions" % settings.wiki.aliases)
+                return result
+
+            # prepare to parse only <pre> tags (so that we can have multiple maps organized by sections)
+            soup = BeautifulSoup(render_markup(page.body, page.mime_type))
+            h = HTMLParser.HTMLParser()
+
+            all_sections = u''.join(map(lambda t: str(t.string), soup.find_all('pre'))).strip()
+            # now that we have the full map, let's build the schema hash
+            for line in all_sections.split('\n'):
+                try:
+                    (link, replacement) = line.strip().split(' ',1)
+                    result[link] = replacement
+                    result[link.replace('_',' ')] = replacement
+                except ValueError:
+                    log.warn("skipping line '%s'" % line)
+                    pass
+            memcache.set(ALIASES, result, namespace=NS_PAGE_METADATA)
+        return result

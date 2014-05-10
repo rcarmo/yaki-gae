@@ -28,6 +28,7 @@ settings = Struct({
         "base"    : "/space",
         "home"    : "HomePage",
         "media"   : "/media",
+        "aliases" : "meta/Aliases",
         "plugins": {
         },
         "markup_overrides": { "text/plain": "text/x-textile" }
