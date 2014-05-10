@@ -55,7 +55,7 @@ def wiki(page):
     except Exception as e:
         log.debug("Attempting to resolve aliases for %s" % page)
         original = w.resolve_alias(page)
-        if original:
+        if original and original != page:
             redirect("%s/%s" % (settings.wiki.base, original))
         log.debug("Attempting to find close matches for %s" % page)
         close = w.get_close_matches_for_page(page)
