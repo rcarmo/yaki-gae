@@ -45,7 +45,7 @@ def wiki(page):
     if ids.is_suspicious(request):
         abort(403, "Temporarily blocked due to suspicious activity")
 
-    # should fallback to index/aliases/levensheim
+    # should fallback to index/aliases/levenshtein
     p = w.get_page(page)
     if not p:
         log.debug("Attempting to retrieve %s from cloud store" % page)
