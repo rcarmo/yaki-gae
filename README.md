@@ -9,11 +9,13 @@ An experimental version of Yaki for Google App Engine.
 
 I initially decided to do this as a quick and dirty test to see whether it would be viable to use the NoSQL datastore for raw markup and very basic metadata, and ended up realizing that this would be a great chance to finish [refactoring Yaki][tng] as an MVC/WSGI app with a well-defined set of constraints regarding storage, task queues, etc.
 
-So, among other things, this version aims to do away (almost completely) with the `yaki` package and change the architecture a bit more. 
+That and try out a PaaS, which I've never really done (I favor sysadmining my own machines, but there's only so much time in the world). [GAE][gae] isn't perfect, but it's well documented and a good fit for [my usual development pattern][dp].
+
+So, among other things, this version aims to do away (almost completely) with the `yaki` package and standardize the internals a bit more. 
 
 ## Roadmap
 
-This is something I poke at on occasion, so there are no set goals other than my wanting to finish the refactoring. [My site][ttom] is running well enough as is atop the [legacy codebase][y] and I fully intend to use this instead, but I am in no hurry.
+This is something I poke at on occasion, so there are no set goals other than my wanting to finish the refactoring. [My site][ttom] is running well enough as is atop the [legacy codebase][y] (code I write tends to work fairly long) and I fully intend to use this instead, but I am in no hurry.
 
 ## Architecture
 
@@ -33,7 +35,7 @@ Given that I'm re-using a fair amount of old code, the coding style is uneven an
 
 I expect to clean that up on successive passes through the code -- right now the priority is on the rendering side, so I'm favoring internal caching inside the controllers to get consistent results across requests.
 
-[gae]:
+[gae]: https://cloud.google.com/products/app-engine/
 [db]: http://www.dropbox.com
 [mc]: http://meocloud.pt
 [ttom]: http://the.taoofmac.com
@@ -44,3 +46,4 @@ I expect to clean that up on successive passes through the code -- right now the
 [md]: http://en.wikipedia.org/wiki/Markdown
 [py]: http://www.python.org
 [go]: http://www.golang.org
+[dp]: http://the.taoofmac.com/space/blog/2013/08/11/2300
