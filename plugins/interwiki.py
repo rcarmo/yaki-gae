@@ -11,12 +11,12 @@ import os, sys, logging
 
 log = logging.getLogger()
 
-import urlparse, re, time
+import re, time, urlparse
 from bs4 import BeautifulSoup
-from yaki import Index, Store, plugin, render_markup
+from controllers.wiki import WikiController as wc
+from plugins import plugin
 from utils.core import Singleton
-from utils.timekit import time_since
-import HTMLParser
+
 
 @plugin
 class InterWiki:
@@ -24,45 +24,14 @@ class InterWiki:
 
     category  = 'markup'
     tags      = ['a']
-    meta_page = 'meta/InterWikiMap'
     schemas   = {}
-    mtime     = 0
-
 
     def __init__(self):
+        self.schemas = wc.get_interwiki_map()
         log.debug(self)
 
 
-    def load(self):
-        # load InterWikiMap
-        s = Store()
-        try:
-            page = s.get_page(self.meta_page)
-        except:
-            log.warn("InterWikiMap: no %s definitions" % self.meta_page)
-            return
-
-        # prepare to parse only <pre> tags (so that we can have multiple maps organized by sections)
-        soup = BeautifulSoup(render_markup(page['data'],page['content-type']))
-        h = HTMLParser.HTMLParser()
-
-        all_sections = u''.join(map(lambda t: str(t.string), soup.find_all('pre'))).strip()
-        # now that we have the full map, let's build the schema hash
-        for line in all_sections.split('\n'):
-            try:
-                (schema, url) = line.strip().split(' ',1)
-                self.schemas[schema.lower()] = h.unescape(url) #url.replace("&amp;","&")
-            except ValueError:
-                log.debug("skipping line '%s'" % line)
-                pass
-        self.mtime = time.time()
-    
-
     def run(self, serial, tag, tagname, pagename, soup, request, response):
-        s = Store()
-        if (self.mtime < s.mtime(self.meta_page)):
-            self.load()
-
         try:
             uri = tag['href']
         except KeyError:
@@ -84,8 +53,8 @@ class InterWiki:
                     uri = self.schemas[schema] + link
             else:
                 uri = self.schemas[schema] + link
-            tag['href'] = uri
             (schema,netloc,path,parameters,query,fragment) = urlparse.urlparse(uri)
+            tag['href'] = uri
             tag['title'] = "link to %s on %s" % (link, netloc)
             tag['class'] = "interwiki"
             # this tag does not need to be re-processed

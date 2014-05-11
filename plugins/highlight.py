@@ -12,13 +12,13 @@ import os, sys, logging
 log = logging.getLogger()
 
 import urlparse, re, cgi, codecs
-from yaki import Store, plugin
-from utils.core import Singleton
 from bs4 import BeautifulSoup
 from gettext import gettext as _
+from plugins import plugin
 from pygments import highlight
-from pygments.lexers import *
 from pygments.formatters import *
+from pygments.lexers import *
+from utils.core import Singleton
 
 @plugin
 class SyntaxHighlight:
@@ -31,7 +31,6 @@ class SyntaxHighlight:
 
     def __init__(self):
         log.debug(self)
-        pass
     
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
@@ -65,4 +64,3 @@ class SyntaxHighlight:
         tag.replace_with(BeautifulSoup(result.strip()))
 
         return False # no other plugin should process this tag
-    

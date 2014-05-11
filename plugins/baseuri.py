@@ -13,10 +13,11 @@ log = logging.getLogger()
 
 import urlparse, re, posixpath
 from bs4 import BeautifulSoup
+from config import settings
+from controllers.wiki import WikiController as wc
 from plugins import plugin
 from utils.core import Singleton
 from utils.timekit import time_since
-from controllers.wiki import WikiController as wc
 
 @plugin
 class BaseURI:
@@ -44,12 +45,9 @@ class BaseURI:
         'attach' :{'title': u'link to attached file %(uri)s', 'class': u'linkedfile'}
     }
 
-    base  = '/space/'
-    media = '/media/'
-    
     def __init__(self):
         log.debug(self)
-        pass
+
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
         try:
@@ -82,7 +80,7 @@ class BaseURI:
         
         if(schema == ''):
             if wc.get_attachment(pagename, path):
-                tag['href'] = unicode(self.media + pagename + "/" + path)
+                tag['href'] = unicode(settings.wiki.media + "/" + pagename + "/" + path)
                 tag['title'] = self.schemas['attach']['title'] % {'uri':os.path.basename(path)}
                 tag['class'] = self.schemas['attach']['class']
                 return False
@@ -97,7 +95,7 @@ class BaseURI:
                         tag['title'] = self.schemas[schema]['title'] % {'uri':uri}
                         tag['class'] = self.schemas[schema]['class']
                         return False
-                tag['href'] = self.base + uri
+                tag['href'] = settings.wiki.base + '/' + uri
                 tag['class'] = "wiki"
                 try: # to use indexed metadata to annotate links
                     last = i.page_info[path]['last-modified']
@@ -106,7 +104,7 @@ class BaseURI:
                     tag['title'] = _('link_defined_notindexed_format') % path
             elif('#' in uri):
                 # this is an anchor, leave it alone
-                tag['href'] = self.base + uri
+                tag['href'] = settings.wiki.base + '/' + uri
                 tag['class'] = "anchor"
                 try:
                     exists = tag['title']
@@ -121,7 +119,7 @@ class BaseURI:
                     exists = tag['class']
                     return True #we're done here, but this tag may need handling elsewhere
                 except:
-                    tag['href'] = self.base + uri
+                    tag['href'] = settings.wiki.base + '/' + uri
                     tag['class'] = "wikiunknown"
                     tag['title'] = _('link_undefined_format') % path
 

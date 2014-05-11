@@ -26,36 +26,12 @@ class Acronyms:
 
     category  = 'markup'
     tags      = ['span','caps']
-    meta_page = 'meta/Acronyms'
-    mtime     = 0
     acronyms  = {}
 
     def __init__(self):
+        self.acronyms = wc.get_acronym_map()
         log.debug(self)
 
-
-    def load(self):
-        # Load acronym map
-        try:
-            page = wc.get_page(self.meta_page)
-        except:
-            log.warn("no %s definitions" % meta_page)
-            return
-
-        # prepare to parse only <pre> tags (so that we can have multiple maps organized by sections)
-        soup = BeautifulSoup(render_markup(page.body, page.mime_type))
-
-        all_sections = u''.join(map(lambda t: str(t.string), soup.find_all('pre'))).strip()
-        # now that we have the full map, let's build the schema hash
-
-        for line in all_sections.split('\n'):
-            try:
-                (acronym, expansion) = line.split(' ',1)
-                self.acronyms[acronym.lower()] = expansion
-            except ValueError: # skip blank lines or with more than two fields
-                log.debug("skipping line '%s'" % line)
-                pass
-    
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
         if (self.mtime < wc.mtime(self.meta_page)):
