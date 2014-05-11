@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Store.py
+store.py
 
 Created by Rui Carmo on 2014-03-29.
 Published under the MIT license.

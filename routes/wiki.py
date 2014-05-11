@@ -17,14 +17,10 @@ from .decorators import render
 from utils import path_for
 from utils.decorators import timed, cache_memory, cache_control, cache_results
 
-from controllers.wiki import WikiController
-from controllers.store import CloudStoreController
+from controllers.wiki import WikiController as wc
 from controllers.ids import IDSController
 
-w = WikiController()
-s = CloudStoreController()
 ids = IDSController()
-
 
 @get('/')
 @get(settings.wiki.base)
@@ -45,20 +41,17 @@ def wiki(page):
     if ids.is_suspicious(request):
         abort(403, "Temporarily blocked due to suspicious activity")
 
-    p = w.get_page(page)
-    if not p:
-        log.debug("Attempting to retrieve %s from cloud store" % page)
-        p = s.get_page(page)
+    p = wc.get_page(page)
     try:
         return {'headers': p.headers, 'data': p.body, 'content-type': p.mime_type}
     except Exception as e:
         # fallback to index/aliases/levenshtein
         log.debug("Attempting to resolve aliases for %s" % page)
-        original = w.resolve_alias(page)
+        original = wc.resolve_alias(page)
         if original and original != page:
             redirect("%s/%s" % (settings.wiki.base, original))
         log.debug("Attempting to find close matches for %s" % page)
-        close = w.get_close_matches_for_page(page)
+        close = wc.get_close_matches_for_page(page)
         if len(close):
             redirect("%s/%s" % (settings.wiki.base, close[0]))
         ids.flag(request)
@@ -73,11 +66,9 @@ def wiki(page):
 def media_asset(item):
     """Return page attachments"""
 
-    a = w.get_attachment(os.path.dirname(item), os.path.basename(item))
+    a = wc.get_attachment(os.path.dirname(item), os.path.basename(item))
     if not a:
-        a = s.get_attachment(os.path.dirname(item), os.path.basename(item))
-        if not a:
-            abort(404, "File not found")
+       abort(404, "File not found")
             
     response.content_type = a.mime_type
     return a.data
