@@ -34,8 +34,6 @@ class Acronyms:
 
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
-        if (self.mtime < wc.mtime(self.meta_page)):
-            self.load()
         try:
             acronym = ''.join(tag.find_all(text=re.compile('.+'))).strip().lower()
         except:
