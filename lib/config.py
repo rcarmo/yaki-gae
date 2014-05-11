@@ -24,11 +24,13 @@ settings = Struct({
     },
     "theme": "ink",
     "wiki": {
-        "#"       : "Paths",
-        "base"    : "/space",
-        "home"    : "HomePage",
-        "media"   : "/media",
-        "aliases" : "meta/Aliases",
+        "#"         : "Paths",
+        "base"      : "/space",
+        "home"      : "HomePage",
+        "media"     : "/media",
+        "aliases"   : "meta/Aliases",
+        "acronyms"  : "meta/Acronyms",
+        "interwiki" : "meta/InterWikiMap",
         "plugins": {
         },
         "markup_overrides": { "text/plain": "text/x-textile" }
