@@ -13,6 +13,7 @@ log = logging.getLogger()
 
 import urlparse, re, cgi, codecs
 from bs4 import BeautifulSoup
+from controllers.wiki import WikiController as wc
 from gettext import gettext as _
 from plugins import plugin
 from pygments import highlight
@@ -34,14 +35,13 @@ class SyntaxHighlight:
     
 
     def run(self, serial, tag, tagname, pagename, soup, request, response):
-        s = Store()
         try:
             source = tag['src']
             (schema,host,path,parameters,query,fragment) = urlparse.urlparse(source)
-            if schema == 'cid' or s.is_attachment(pagename,path):
-                filename = s.get_attachment_filename(pagename,path)
-                if os.path.exists(filename):
-                    buffer = codecs.open(filename,'r','utf-8').read().strip()
+            if schema == 'cid' or wc.is_attachment(pagename,path):
+                attachment = wc.get_attachment(pagename,path)
+                if attachment:
+                    buffer = attachment.data
                 else:
                     tag.replaceWith(_('error_include_file'))
                     return False
@@ -55,6 +55,7 @@ class SyntaxHighlight:
         except KeyError:
             lexer = 'text'
 
+        # TODO: find a way to do inline styles with the correct color scheme when formatting for RSS
         if request is False: # we're formatting for RSS
             lexer = 'text'
 
