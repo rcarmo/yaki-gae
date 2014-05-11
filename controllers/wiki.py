@@ -93,6 +93,7 @@ class WikiController:
         result = Page.get_by_id(path.lower())
         if not result:
             return store.get_page(path)
+        return result
 
 
     @staticmethod
@@ -153,14 +154,13 @@ class WikiController:
     @staticmethod
     def parse_mapping_page(page, transform):
         result = {}
-        try:
-            page = WikiController.get_page(page)
-        except Exception as e:
-            log.warn("Could not load %s: %s" % (page, e))
+        p = WikiController.get_page(page)
+        if not p:
+            log.warn("Could not load %s" % page)
             return result
 
         # prepare to parse only <pre> tags (so that we can have multiple maps organized by sections)
-        soup = BeautifulSoup(render_markup(page.body, page.mime_type))
+        soup = BeautifulSoup(render_markup(p.body, p.mime_type))
 
         all_sections = u''.join(map(lambda t: str(t.string), soup.find_all('pre'))).strip()
         # now that we have the full map, let's build the schema hash

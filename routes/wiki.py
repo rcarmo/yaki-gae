@@ -9,6 +9,8 @@ import os, sys, logging
 
 log = logging.getLogger()
 
+from controllers.wiki import WikiController as wc
+from controllers.ids import IDSController
 from bottle import request, response, get, redirect, view, static_file, abort
 from config import settings
 from google.appengine.api import memcache
@@ -17,8 +19,6 @@ from .decorators import render
 from utils import path_for
 from utils.decorators import timed, cache_memory, cache_control, cache_results
 
-from controllers.wiki import WikiController as wc
-from controllers.ids import IDSController
 
 ids = IDSController()
 

@@ -25,8 +25,7 @@ bottle.DEBUG = True
 english = gettext.translation('yaki', os.path.join(os.path.dirname(__file__), 'locale'), languages=['en'])
 english.install()
 log.info(_('translation_applied'))
-
-import api, routes, controllers, tasks
+import controllers, api, routes, tasks
 
 app = bottle.default_app()
 bottle.run(app=app, server='gae')

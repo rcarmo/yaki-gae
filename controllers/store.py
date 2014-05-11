@@ -53,11 +53,12 @@ class CloudStoreController:
     def get_token():
         access_token = memcache.get(TOKEN_KEY, namespace=NS_TOKEN)
         if not access_token:
-            log.warn("No access token.")
+            log.warn("Access token not in memcache")
             try:
                 token = DropboxToken.get_by_id(TOKEN_KEY)
                 access_token = token.access_token
                 memcache.set(TOKEN_KEY, access_token, namespace=NS_TOKEN)
+                log.info("Access token in memcache")
             except Exception as e:
                 log.error("Unable to retrieve token from NDB: %s" % e)
 

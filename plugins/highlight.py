@@ -38,15 +38,11 @@ class SyntaxHighlight:
         try:
             source = tag['src']
             (schema,host,path,parameters,query,fragment) = urlparse.urlparse(source)
-            if schema == 'cid' or wc.is_attachment(pagename,path):
-                attachment = wc.get_attachment(pagename,path)
-                if attachment:
-                    buffer = attachment.data
-                else:
-                    tag.replaceWith(_('error_include_file'))
-                    return False
+            attachment = wc.get_attachment(pagename,path)
+            if attachment:
+                buffer = attachment.data
             else:
-                tag.replaceWith(_('error_reference_format'))
+                tag.replaceWith(_('error_include_file'))
                 return False
         except KeyError:
             buffer = u''.join(tag.find_all(text=re.compile('.+'))).strip()
