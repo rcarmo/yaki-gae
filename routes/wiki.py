@@ -45,7 +45,6 @@ def wiki(page):
     if ids.is_suspicious(request):
         abort(403, "Temporarily blocked due to suspicious activity")
 
-    # should fallback to index/aliases/levenshtein
     p = w.get_page(page)
     if not p:
         log.debug("Attempting to retrieve %s from cloud store" % page)
@@ -53,6 +52,7 @@ def wiki(page):
     try:
         return {'headers': p.headers, 'data': p.body, 'content-type': p.mime_type}
     except Exception as e:
+        # fallback to index/aliases/levenshtein
         log.debug("Attempting to resolve aliases for %s" % page)
         original = w.resolve_alias(page)
         if original and original != page:
