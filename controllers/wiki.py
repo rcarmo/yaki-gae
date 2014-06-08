@@ -36,6 +36,8 @@ store = CloudStoreController()
 
 class WikiController:
 
+    link_overrides = {} # "x-link" headers in files
+
     @staticmethod
     @memoize
     def get_recent_changes(limit = 100):
@@ -167,10 +169,9 @@ class WikiController:
         for line in all_sections.split('\n'):
             try:
                 (link, replacement) = line.strip().split(' ',1)
-                for item in transform(link, replacement):
-                    result.update(item)
-            except ValueError:
-                log.warn("skipping line '%s'" % line)
+                result.update(transform(link, replacement))
+            except ValueError as e:
+                log.warn("skipping line '%s': %s" % (line, e))
                 pass
         return result
 
@@ -178,7 +179,8 @@ class WikiController:
     @staticmethod
     def get_wiki_aliases():
         def genalias(k, v):
-            return [{k: v}, {k.replace('_', ' '), v}]
+            log.debug("%s:%s" % (k,v))
+            return {k: v, k.replace('_', ' '): v}
 
         result = memcache.get(WIKI_ALIASES, namespace=NS_PAGE_METADATA)
         if not result:
@@ -191,7 +193,7 @@ class WikiController:
     def get_interwiki_map():
         def genschema(k, v):
             h = HTMLParser.HTMLParser()
-            return [{k.lower(): h.unescape(v)}]
+            return {k.lower(): h.unescape(v)}
 
         result = memcache.get(INTERWIKI_MAP, namespace=NS_PAGE_METADATA)
         if not result:
@@ -203,7 +205,7 @@ class WikiController:
     @staticmethod
     def get_acronym_map():
         def lowerkey(k, v):
-            return [{k.lower(): v}]
+            return {k.lower(): v}
 
         result = memcache.get(ACRONYM_MAP, namespace=NS_PAGE_METADATA)
         if not result:

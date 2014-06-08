@@ -7,7 +7,7 @@ Description: Docstring utility functions
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, logging
+import logging
 import inspect
 from bottle import app
 

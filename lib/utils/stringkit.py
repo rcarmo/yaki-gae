@@ -7,7 +7,10 @@ Description: Utility functions for retrieving process information
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, re, logging, htmlentitydefs
+import sys
+import re
+import logging
+import htmlentitydefs
 
 log = logging.getLogger()
 

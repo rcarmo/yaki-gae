@@ -7,7 +7,10 @@ Description: Utility functions for retrieving process information
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, logging, platform, __builtin__
+import os
+import logging
+import platform
+import __builtin__
 
 log = logging.getLogger()
 

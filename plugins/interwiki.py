@@ -7,16 +7,14 @@ Created by Rui Carmo on 2007-01-11.
 Published under the MIT license.
 """
 
-import os, sys, logging
+import logging
 
 log = logging.getLogger()
 
-import re, time, urlparse
-from bs4 import BeautifulSoup
+import urlparse
 from controllers.wiki import WikiController as wc
-from plugins import plugin
 from utils.core import Singleton
-
+from plugins import plugin
 
 @plugin
 class InterWiki:

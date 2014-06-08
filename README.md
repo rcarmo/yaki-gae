@@ -11,11 +11,11 @@ I initially decided to do this as a quick and dirty test to see whether it would
 
 That and try out a PaaS, which I've never really done (I favor sysadmining my own machines, but there's only so much time in the world). [GAE][gae] isn't perfect, but it's well documented and a good fit for [my usual development pattern][dp].
 
-So, among other things, this version aims to do away (almost completely) with the `yaki` package and standardize the internals a bit more. 
+So, among other things, this version aimed to do away (almost completely) with the `yaki` package and standardize the internals a bit more.
 
-## Roadmap
+However, after finishing that, I realized that it was prohibitively expensive to crawl the remote data store for changes, so I decided to put this on ice, strip away the GAE bits, and move development to a private Bitbucket repo.
 
-This is something I poke at on occasion, so there are no set goals other than my wanting to finish the refactoring. [My site][ttom] is running well enough as is atop the [legacy codebase][y] (code I write tends to work fairly long) and I fully intend to use this instead, but I am in no hurry.
+This is pretty usable on its own, provided you're willing to write a way to manage the content store rather than sync it with a cloud store service -- it's certainly feasible to run a self-contained blog engine atop GAE using this as a basis, but a filesystem is just more convenient for me.
 
 ## Architecture
 
@@ -31,9 +31,7 @@ Were it not for that (and the superior feature sets of most [Python][py] markup 
 
 ## Coding Style
 
-Given that I'm re-using a fair amount of old code, the coding style is uneven and there is an uneasy mix of singletons, static classes, functional code, rather excessive memoization, etc.
-
-I expect to clean that up on successive passes through the code -- right now the priority is on the rendering side, so I'm favoring internal caching inside the controllers to get consistent results across requests.
+Given that I'm re-using a fair amount of old code, the coding style is uneven and there is an uneasy mix of singletons, static classes, functional code, rather excessive memoization, etc. One of the priorities here was to minimize datastore and cloud store requests.
 
 [gae]: https://cloud.google.com/products/app-engine/
 [db]: http://www.dropbox.com

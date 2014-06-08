@@ -7,7 +7,9 @@ Description: Utility functions
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, logging, json
+import json
+import logging
+import os
 
 log = logging.getLogger()
 

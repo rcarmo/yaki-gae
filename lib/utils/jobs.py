@@ -7,13 +7,20 @@ Description: In-process job management
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, logging, time, traceback, multiprocessing, gc
-from cPickle import loads, dumps
-from Queue import PriorityQueue, Empty
-from threading import Thread, Semaphore
-from uuid import uuid4
-from functools import partial
+from Queue import Empty
+from Queue import PriorityQueue
 from collections import defaultdict
+from functools import partial
+import logging
+import multiprocessing
+from threading import Semaphore
+from threading import Thread
+import time
+import traceback
+from uuid import uuid4
+
+from cPickle import dumps
+from cPickle import loads
 
 log = logging.getLogger(__name__)
 

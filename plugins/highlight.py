@@ -7,19 +7,21 @@ Created by Rui Carmo on 2007-01-11.
 Published under the MIT license.
 """
 
-import os, sys, logging
+import logging
 
 log = logging.getLogger()
 
-import urlparse, re, cgi, codecs
+import urlparse
+import re
 from bs4 import BeautifulSoup
 from controllers.wiki import WikiController as wc
 from gettext import gettext as _
-from plugins import plugin
 from pygments import highlight
 from pygments.formatters import *
 from pygments.lexers import *
 from utils.core import Singleton
+from plugins import plugin
+
 
 @plugin
 class SyntaxHighlight:

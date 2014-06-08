@@ -2,41 +2,41 @@ import json
 import os
 import urllib
 
-from config import settings
-from controllers.wiki import *
+from config import settings, NS_BATCH
+from controllers.store import CloudStoreController
+from controllers.wiki import WikiController as wc
 from google.appengine.ext import deferred
+from google.appengine.api import memcache
+from bottle import get
 import logging
-from utils.urlkit import fetch
 
 log = logging.getLogger()
 
+store = CloudStoreController()
+
+QUEUED_KEY = "queued"
+
+@get("/_ah/warmup")
+def start():
+    deferred.defer(scan_preloads, ["meta"])
 
 
-def get_files():
-    log.info("starting run")
-    access_token = get_token()
-    if not access_token:
-        return
-    lock = memcache.get("tasks:dropbox")
-    if not lock:
-        memcache.set("tasks:dropbox", "unique_id_placeholder", 15)
-    else:
-        return
+def scan_preloads(prefixes):
+    if not prefixes:
+        prefixes = settings.dropbox.preload.keys();
+    for prefix in prefixes:
+        queued = memcache.get(prefix, namespace=NS_BATCH)
+        if not queued:
+            memcache.set(prefix, True, namespace=NS_BATCH)
+        else:
+            return
+        pages = store.scan_subtree(prefix)
+        pages.sort(reverse=True)
+        deferred.defer(preload_pages, pages, prefix)
 
-    search_url = "https://api.dropbox.com/1/search/dropbox?%s" % urllib.urlencode({
-        "query": "index.txt",
-        "access_token": access_token
-    })
-    res = fetch(search_url)
-    data = json.loads(res['data'])
-    known = get_page_mtimes()
-    for f in data:
-        log.info(f)
-        path = os.path.relpath(os.path.dirname(f['path']), settings.dropbox.root_path).lower()
-        if path in known.keys():
-            # TODO: check mtime here as well
-            continue
-        deferred.defer(get_single_file, f['path'])
-
-#deferred.defer(get_files)
+def preload_pages(pages, prefix):
+    for p in pages:
+        log.warn(p)
+        wc.get_page(p["page_name"])
+    memcache.delete(prefix, namespace=NS_BATCH)
 

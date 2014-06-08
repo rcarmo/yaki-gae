@@ -36,6 +36,7 @@ settings = Struct({
         "markup_overrides": { "text/plain": "text/x-textile" }
     },
     "dropbox": {
+        "#": "Paths to preload",
         "preload": {
             "meta" : 100,
             "blog" : 100,
@@ -62,6 +63,7 @@ NS_PAGE_METADATA  = 'page_metadata'
 NS_TOKEN          = 'token'
 NS_IDS            = 'ids'
 NS_CLOUD_METADATA = 'cloud_metadata'
+NS_BATCH          = 'batch'
 
 # Characters used as separators/aliasing generation
 ALIASING_CHARS = ['','.','-','_']

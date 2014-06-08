@@ -25,6 +25,7 @@ TOKEN_KEY = "default"
 
 _urls = Struct({
     "files"   : "https://api-content.dropbox.com/1/files/dropbox/%s?%s",
+    "search"  : "https://api.dropbox.com/1/search/dropbox/%s?%s",
     "metadata": "https://api.dropbox.com/1/metadata/dropbox/%s?%s",
     "auth"    : "https://www.dropbox.com/1/oauth2/authorize",
     "token"   : "https://api.dropbox.com/1/oauth2/token"
@@ -36,7 +37,19 @@ def parse_dropbox_date(date):
 
 
 def relative_path(path):
-    os.path.relpath(os.path.dirname(path), settings.dropbox.root_path)
+    return os.path.relpath(os.path.dirname(path), os.path.normpath(settings.dropbox.root_path))
+
+
+def transform_entry(metadata):
+    result = metadata
+    mappings = {"modified"    : parse_dropbox_date,
+                "client_mtime": parse_dropbox_date}
+    for k in mappings:
+        if k in result:
+            result[k] = mappings[k](result[k])
+    result["page_name"] = relative_path(result["path"])
+    return result
+
 
 
 class CloudStoreController:
@@ -119,7 +132,7 @@ class CloudStoreController:
             try:
                 headers, body, mime_type = parse_rfc822(r['data'])
             except Exception as e:
-                log.error("Could not parse %s: %s" % (path, e))
+                log.error("Could not parse %s: %s" % (page, e))
                 return None
 
             # mtime is taken from cloud store metadata
@@ -128,7 +141,7 @@ class CloudStoreController:
             if ctime:
                 ctime = datetime.fromtimestamp(parse_date(ctime))
 
-            id   = page.lower()
+            id = page.lower()
             params = {
                 "id"       : id,
                 "path"     : page,
@@ -217,5 +230,25 @@ class CloudStoreController:
             a = Attachment(**params)
             a.put()
             return a
+        return None
+
+
+    @memoize
+    def scan_subtree(self, path):
+
+        if not self.token:
+            log.debug("No token")
+            return None
+
+        params = {"access_token": self.token,
+                  "query"       : "index"}
+        search_url = _urls.search % (os.path.normpath(os.path.join(settings.dropbox.root_path, path)),
+                                     urllib.urlencode(params))
+        log.warn(search_url)
+        r = fetch(search_url)
+
+        if r['status'] == 200:
+            results = filter(lambda x: not x["is_dir"],json.loads(r["data"]))
+            return [transform_entry(i) for i in results]
         return None
 

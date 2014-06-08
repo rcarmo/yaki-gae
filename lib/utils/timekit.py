@@ -7,8 +7,13 @@ Description: Utility functions for handling date and time information
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, time, math, re, logging, datetime
+import time
+import math
+import re
+import logging
+import datetime
 import gettext
+
 gettext.textdomain('date')
 _ = gettext.gettext
 

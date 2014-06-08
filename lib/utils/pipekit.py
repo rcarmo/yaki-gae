@@ -7,8 +7,8 @@ Description: Pipeline patterns, mostly taken from itertools recipes
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, logging
-import itertools, collections
+import itertools
+import collections
 
 def chunk(chunk_size=32):
     """Group chunk_size elements into lists"""

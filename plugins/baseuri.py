@@ -7,17 +7,18 @@ Created by Rui Carmo on 2006-09-12.
 Published under the MIT license.
 """
 
-import os, sys, logging
+import os
+import logging
 
 log = logging.getLogger()
 
-import urlparse, re, posixpath
-from bs4 import BeautifulSoup
+import urlparse
+import posixpath
 from config import settings
 from controllers.wiki import WikiController as wc
-from plugins import plugin
 from utils.core import Singleton
 from utils.timekit import time_since
+from plugins import plugin
 
 @plugin
 class BaseURI:
@@ -88,8 +89,9 @@ class BaseURI:
             if(known): # this is a known Wiki link, so there is no need to run it through more plugins
                 if request is False:
                     # check for a direct outbound link
-                    if path in i.default_links:
-                        uri = i.default_links[path]
+                    # TODO: check x-link handling
+                    if path in wc.link_overrides:
+                        uri = wc.link_overrides[path]
                         (schema,netloc,path,parameters,query,fragment) = urlparse.urlparse(uri)
                         tag['href'] = uri
                         tag['title'] = self.schemas[schema]['title'] % {'uri':uri}
@@ -102,14 +104,11 @@ class BaseURI:
                     tag['title'] = _('link_update_format') % (path,time_since(last))
                 except:
                     tag['title'] = _('link_defined_notindexed_format') % path
-            elif('#' in uri):
-                # this is an anchor, leave it alone
-                tag['href'] = settings.wiki.base + '/' + uri
+            elif('#' == uri[0]):
+                # this is an in-page anchor
+                if request != False:
+                    tag['href'] = request.path + uri
                 tag['class'] = "anchor"
-                try:
-                    exists = tag['title']
-                except:
-                    tag['title'] = _('link_anchor_format') % fragment
             else:
                 if request is False:
                     # remove unknown wiki links for RSS feeds

@@ -7,12 +7,19 @@ Description: Utility functions for retrieving CPU statistics
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, logging
+import logging
+import os
+import sys
 
 log = logging.getLogger()
 
-import re, time, gzip, base64
-import socket, tempfile, urllib, urllib2, httplib, urlparse
+import re
+import gzip
+import base64
+import tempfile
+import urllib
+import urllib2
+import urlparse
 from StringIO import StringIO
 from xml.dom.minidom import parseString
 from urllib2 import HTTPCookieProcessor, HTTPRedirectHandler, HTTPDefaultErrorHandler, HTTPError
@@ -20,7 +27,7 @@ import cookielib
 from collections import defaultdict
 from utils.core import tb
 from config import settings
-from .decorators import memoize
+from utils.decorators import memoize
 from datetime import datetime
 
 # Initialize debug level upon module load

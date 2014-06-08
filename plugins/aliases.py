@@ -7,15 +7,13 @@ Created by Rui Carmo on 2007-01-11.
 Published under the MIT license.
 """
 
-import os, sys, logging
+import logging
 
 log = logging.getLogger()
 
-from bs4 import BeautifulSoup
 from controllers.wiki import WikiController as wc
 from utils.core import Singleton
 from plugins import plugin
-import urlparse, re, time
 
 @plugin
 class Aliases:

@@ -7,8 +7,10 @@ Description: Core utility functions
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, logging
-import fnmatch, json
+import os
+import sys
+import logging
+import json
 
 log = logging.getLogger()
 

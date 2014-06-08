@@ -7,7 +7,8 @@ Description: Utility functions for retrieving CPU statistics
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, time, logging
+import logging
+import time
 
 log = logging.getLogger()
 

@@ -6,11 +6,11 @@ API calls for users
 Created by: Rui Carmo
 """
 
-import os, sys, logging, json
+import logging
 
 log = logging.getLogger()
 
-from bottle import route, get, put, post, delete, request, response, abort
+from bottle import get
 import api
 
 from utils.decorators import timed, jsonp, cache_results, cache_control

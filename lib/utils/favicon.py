@@ -6,13 +6,11 @@ Favicon retrieval
 Created by: Rui Carmo
 License: MIT (see LICENSE for details)
 """
-import os, sys, logging
+import logging
 
 log = logging.getLogger()
 
-import urllib2, urlparse, base64
-from config import settings
-from utils import tb
+import urlparse
 from utils.urlkit import fetch, data_uri
 from bs4 import BeautifulSoup
 

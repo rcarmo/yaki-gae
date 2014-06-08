@@ -6,10 +6,14 @@ Decorator functions
 Created by: Rui Carmo
 """
 
-from bottle import request, response, route, abort
-import time, binascii, hashlib, email.utils, functools, json
+from bottle import request, response, abort
+import time
+import binascii
+import hashlib
+import email.utils
+import functools
+import json
 import logging
-from utils import tb
 from base64 import b64encode, b64decode
 
 from google.appengine.api import memcache

@@ -7,7 +7,8 @@ Description: Clustering and statistics helpers
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, re, logging
+import logging
+import re
 
 log = logging.getLogger()
 

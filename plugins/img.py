@@ -7,10 +7,15 @@ Created by Rui Carmo on 2007-01-11.
 Published under the MIT license.
 """
 
-import os, os.path, sys, logging, cgi, urlparse
+import cgi
+import logging
+import os
+import os.path
+import urlparse
+
 from config import settings
-from plugins import plugin
 from utils.core import Singleton
+from plugins import plugin
 
 log = logging.getLogger()
 

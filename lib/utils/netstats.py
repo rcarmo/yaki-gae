@@ -7,8 +7,10 @@ Description: Network utility functions
 License: MIT (see LICENSE.md for details)
 """
 
-import os, sys, time, re, logging
-import socket, struct
+import re
+import logging
+import socket
+import struct
 
 log = logging.getLogger()
 
