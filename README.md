@@ -3,7 +3,7 @@
 yaki-gae
 ========
 
-An experimental version of Yaki for Google App Engine.
+An experimental version of Yaki for Google App Engine, published as sample code.
 
 ## Why?
 
